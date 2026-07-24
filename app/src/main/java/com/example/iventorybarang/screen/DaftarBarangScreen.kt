@@ -83,9 +83,15 @@ fun DaftarBarangScreen(navController: NavHostController) {
     }
 
     // Refresh data setiap kali screen ini muncul (kembali dari screen lain)
-    // LaunchedEffect(Unit) hanya jalan sekali, tapi kita pakai currentBackStackEntry
-    // agar refresh saat kembali dari screen lain
     LaunchedEffect(navController.currentBackStackEntry) {
+        // Cek apakah ada pesan notifikasi dari screen sebelumnya (Tambah/Edit/Hapus)
+        val message = navController.currentBackStackEntry?.savedStateHandle?.get<String>("notifikasi")
+        if (message != null) {
+            snackbarHostState.showSnackbar(message)
+            // Hapus pesan agar tidak muncul berulang kali (saat rotasi layar)
+            navController.currentBackStackEntry?.savedStateHandle?.remove<String>("notifikasi")
+        }
+
         daftarBarang = repository.getSemuaBarang()
     }
 

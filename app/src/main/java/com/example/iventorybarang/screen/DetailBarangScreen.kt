@@ -26,7 +26,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.inventarisbarang.data.BarangRepository
 import com.example.inventarisbarang.model.Barang
-import kotlinx.coroutines.launch
 
 /**
  * DetailBarangScreen menampilkan informasi lengkap satu barang.
@@ -62,7 +61,6 @@ fun DetailBarangScreen(
 
     // SnackbarHostState dan CoroutineScope untuk Snackbar
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     // Refresh data saat kembali dari screen edit
     LaunchedEffect(navController.currentBackStackEntry) {
@@ -329,18 +327,13 @@ fun DetailBarangScreen(
                             repository.hapusBarang(item.id)
                             showDeleteDialog = false
 
-                            // Tampilkan Snackbar lalu kembali ke daftar
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    message = "${item.nama} berhasil dihapus",
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                            // Sedikit delay agar user sempat melihat snackbar sebelum pindah screen
-                            scope.launch {
-                                kotlinx.coroutines.delay(800)
-                                navController.popBackStack()
-                            }
+                            // Kirim pesan ke screen sebelumnya (DaftarBarang)
+                            navController.previousBackStackEntry?.savedStateHandle?.set(
+                                "notifikasi",
+                                "${item.nama} berhasil dihapus"
+                            )
+                            
+                            navController.popBackStack()
                         },
                         colors = ButtonDefaults.textButtonColors(
                             contentColor = MaterialTheme.colorScheme.error

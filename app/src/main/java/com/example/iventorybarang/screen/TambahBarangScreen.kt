@@ -125,19 +125,13 @@ fun TambahBarangScreen(
             repository.tambahBarang(barangBaru)
         }
 
-        scope.launch {
-            snackbarHostState.showSnackbar(
-                message = if (isEditMode) "Barang berhasil diperbarui"
-                else "Barang berhasil ditambahkan",
-                duration = SnackbarDuration.Short
-            )
-        }
+        // Kirim pesan ke screen sebelumnya (DaftarBarang)
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            "notifikasi",
+            if (isEditMode) "Barang berhasil diperbarui" else "Barang berhasil ditambahkan"
+        )
         
-        // Sedikit delay agar user sempat melihat snackbar sebelum pindah screen
-        scope.launch {
-            kotlinx.coroutines.delay(800)
-            navController.popBackStack()
-        }
+        navController.popBackStack()
     }
 
     Scaffold(
